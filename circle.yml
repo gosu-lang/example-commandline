@@ -16,6 +16,7 @@ test:
   pre:
     - curl -L -o gosu-$GOSU_VERSION-full.tar.gz http://search.maven.org/remotecontent?filepath=org/gosu-lang/gosu/gosu/$GOSU_VERSION/gosu-$GOSU_VERSION-full.tar.gz
     - tar -xvf gosu-$GOSU_VERSION-full.tar.gz
+    - curl -L -o commons-math-2.2.jar http://search.maven.org/remotecontent?filepath=org/apache/commons/commons-math/2.2/commons-math-2.2.jar
   override:
     # Run an inline script from the commandline
     - $GOSU_HOME/bin/gosu -e 'print(\"Hello world!\")'
@@ -26,4 +27,4 @@ test:
     # Run a Gosu Program which imports other classes
     - $GOSU_HOME/bin/gosu imports/RunFoo.gsp
     # Run a simple Gosu Program with a classpath argument
-    - $GOSU_HOME/bin/gosu -classpath "foo,bar" externalDeps/yyy.gsp
+    - $GOSU_HOME/bin/gosu -classpath "commons-math-2.2.jar" externalDeps/Exponents.gsp
