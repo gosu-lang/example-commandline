@@ -16,8 +16,11 @@ dependencies:
   pre:
     - curl -L -o gosu-$GOSU_VERSION-full.tar.gz http://search.maven.org/remotecontent?filepath=org/gosu-lang/gosu/gosu/$GOSU_VERSION/gosu-$GOSU_VERSION-full.tar.gz
     - tar -xvf gosu-$GOSU_VERSION-full.tar.gz
+  # If we don't cache GOSU_HOME, it disappears after the dependencies step
+  cache_directories:
+    - "`$GOSU_HOME`"
 
 test:
-  # Run an inline script from the commandline 
+  # Run an inline script from the commandline
   override:
     - $GOSU_HOME/bin/gosu -e 'print(\"Hello world!\")'
