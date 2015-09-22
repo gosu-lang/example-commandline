@@ -16,6 +16,14 @@ test:
   pre:
     - curl -L -o gosu-$GOSU_VERSION-full.tar.gz http://search.maven.org/remotecontent?filepath=org/gosu-lang/gosu/gosu/$GOSU_VERSION/gosu-$GOSU_VERSION-full.tar.gz
     - tar -xvf gosu-$GOSU_VERSION-full.tar.gz
-  # Run an inline script from the commandline
   override:
+    # Run an inline script from the commandline
     - $GOSU_HOME/bin/gosu -e 'print(\"Hello world!\")'
+    # Run a simple Gosu Program with no dependencies or arguments
+    - $GOSU_HOME/bin/gosu simple/HelloWorld.gsp
+    # Run a simple Gosu Program with arguments
+    - $GOSU_HOME/bin/gosu simple/HelloWorldWithArgs.gsp foo bar "baz" 42 Acceptable!
+    # Run a Gosu Program which imports other classes
+    - $GOSU_HOME/bin/gosu imports/RunFoo.gsp
+    # Run a simple Gosu Program with a classpath argument
+    - $GOSU_HOME/bin/gosu -classpath "foo,bar" externalDeps/yyy.gsp
