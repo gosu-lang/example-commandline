@@ -9,12 +9,11 @@ machine:
 
   environment:
     JAVA_OPTS: "-Xmx1g"
-    GOSU_HOME: $HOME/gosu_home
+    GOSU_HOME: ${HOME}/gosu_home
     GOSU_VERSION: "1.8"
 
   pre:
-    - mkdir $GOSU_HOME
-    - curl -L 
+    - mkdir ${GOSU_HOME}
 
 dependencies:
   pre:
