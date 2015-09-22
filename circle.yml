@@ -9,14 +9,12 @@ machine:
 
   environment:
     JAVA_OPTS: "-Xmx1g"
-    GOSU_HOME: ${HOME}/gosu_home
+    GOSU_HOME: $HOME/gosu_home
     GOSU_VERSION: "1.8"
-
-  pre:
-    - mkdir ${GOSU_HOME}
 
 dependencies:
   pre:
+    - mkdir $GOSU_HOME
     - curl -L -o $GOSU_HOME/gosu-$GOSU_VERSION-full.tar.gz http://search.maven.org/remotecontent?filepath=org/gosu-lang/gosu/gosu/$GOSU_VERSION/gosu-$GOSU_VERSION-full.tar.gz
     - tar -xvf $GOSU_HOME/gosu-$GOSU_VERSION-full.tar.gz
 
