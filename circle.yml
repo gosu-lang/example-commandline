@@ -9,7 +9,7 @@ machine:
 
   environment:
     JAVA_OPTS: "-Xmx1g"
-    GOSU_VERSION: "1.8"
+    GOSU_VERSION: "1.8.1"
     GOSU_HOME: $HOME/$CIRCLE_PROJECT_REPONAME/gosu-$GOSU_VERSION
 
 test:
