@@ -26,7 +26,7 @@ class GosuCommandLineTask extends Exec {
         }
 
         super.setCommandLine(theCommand)
-        this.project.getLogger().quiet('The command will be: ' + getCommandLine())
+        this.project.getLogger().quiet('The command for task ' + this.name + ' will be: ' + getCommandLine())
     }
 
 }

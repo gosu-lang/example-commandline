@@ -89,11 +89,11 @@ task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
 
     String expectedOutput = 
 """hello, I found these arguments:
-foo
-bar
-baz
-42
-Acceptable!
+\tfoo
+\tbar
+\tbaz
+\t42
+\tAcceptable!
 """
 
     doLast {
