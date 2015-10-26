@@ -1,5 +1,3 @@
-
-
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
@@ -13,7 +11,7 @@ class GosuCommandLineTask extends Exec {
 
     @Override
     public void setCommandLine(Iterable<?> args) {
-        this.project.getLogger().quiet('GosuCommandLineTask#setCommandLine')
+//        this.project.getLogger().quiet('GosuCommandLineTask#setCommandLine')
 
         def theCommand
 
@@ -26,7 +24,7 @@ class GosuCommandLineTask extends Exec {
         }
 
         super.setCommandLine(args) //TODO actually use 'theCommand'
-        this.project.getLogger().quiet('The command will be: ' + getCommandLine())
+//        this.project.getLogger().quiet('The command will be: ' + getCommandLine())
     }
 
     @TaskAction
