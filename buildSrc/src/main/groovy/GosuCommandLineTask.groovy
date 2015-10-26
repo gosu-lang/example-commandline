@@ -9,6 +9,10 @@ class GosuCommandLineTask extends Exec {
 
     protected final boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
 
+    public GosuCommandLineTask() {
+        standardOutput = new ByteArrayOutputStream()
+    }
+    
     @Override
     public void setCommandLine(Iterable<?> args) {
 
@@ -25,5 +29,5 @@ class GosuCommandLineTask extends Exec {
         super.setCommandLine(theCommand)
         this.project.getLogger().quiet('The command for task ' + this.name + ' will be: ' + getCommandLine())
     }
-
+    
 }

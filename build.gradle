@@ -41,9 +41,6 @@ task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
     gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
     commandLine = ['-e', """print('Hello world!')"""]
 
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
-    
     String expectedOutput = 'Hello world!' + LF
     
     doLast {
@@ -57,9 +54,6 @@ task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
     gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
     commandLine = ['simple/HelloWorld.gsp']
 
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
-
     String expectedOutput = 'hello!' + LF
 
     doLast {
@@ -72,9 +66,6 @@ task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
     
     gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
     commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable!']
-
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
 
     String expectedOutput = 
 """hello, I found these arguments:
@@ -96,9 +87,6 @@ task gosuProgramWithImports(type: GosuCommandLineTask, dependsOn: extractGosu) {
     gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
     commandLine = ['imports/RunFoo.gsp']
 
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
-
     String expectedOutput = "baz" + LF
 
     doLast {
@@ -111,9 +99,6 @@ task gosuProgramWithClasspath(type: GosuCommandLineTask, dependsOn: extractGosu)
 
     gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
     commandLine = ['-classpath', '\"lib/commons-math-2.2.jar\"', 'externalDeps/Exponents.gsp']
-
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
 
     String expectedOutput = "9 to the power of 3 is: 729" + LF
 
