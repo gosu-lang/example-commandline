@@ -48,6 +48,8 @@ task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
     String expectedOutput = 'Hello world!' + LF
     
     doLast {
+        project.logger.quiet('expected bytearray:\t' + expectedOutput.bytes)
+        project.logger.quiet('  actual bytearray:\t' + standardOutput.bytes)
         assert expectedOutput.equals(standardOutput.toString())
     }
 }
