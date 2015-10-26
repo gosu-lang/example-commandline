@@ -3,9 +3,12 @@ import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
+import java.nio.file.Path
+
 class GosuCommandLineTask extends Exec {
 
-//    @Input List<String> gosuArgs
+    @Input
+    String gosuHome
 
     protected final boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
 
@@ -16,15 +19,15 @@ class GosuCommandLineTask extends Exec {
         def theCommand
 
         if(WINDOWS) {
-            theCommand = ['cmd', '/c', 'gosu.bat']
+            theCommand = ['cmd', '/c', "$gosuHome\\bin\\gosu.bat"]
             theCommand.addAll(args)
         } else {
-            theCommand = ['./gosu']
+            theCommand = ["$gosuHome/bin/gosu"]
             theCommand.addAll(args)
         }
 
-        super.setCommandLine(args) //TODO actually use 'theCommand'
-//        this.project.getLogger().quiet('The command will be: ' + getCommandLine())
+        super.setCommandLine(theCommand) //TODO actually use 'theCommand'
+        this.project.getLogger().quiet('The command will be: ' + getCommandLine())
     }
 
 }

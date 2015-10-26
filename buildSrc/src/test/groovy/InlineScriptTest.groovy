@@ -46,8 +46,10 @@ class InlineScriptTest extends Specification {
         given:
         def expectedOutput = 'hello' + LF
 
-        GosuCommandLineTask task = project.task('testTask', type: GosuCommandLineTask, dependsOn: extractGosu)
-        task.commandLine = ["$project.buildDir/gosu/gosu-1.8.1/bin/gosu", '-e', """print('hello')"""]
+        GosuCommandLineTask task = project.task('testTask', type: GosuCommandLineTask, dependsOn: extractGosu) {
+            gosuHome =  "$project.buildDir/gosu/gosu-1.8.1"
+            commandLine = ['-e', """print('hello')"""]
+        }
 
         when:
         capture.flush()
