@@ -1,9 +1,5 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-plugins {
-    id 'groovy'
-}
-
 final boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
 final String LF = System.getProperty("line.separator")
 
@@ -14,8 +10,6 @@ if(javaVersion < Double.valueOf((String) project.minimumJavaVersion)) {
 } else {
     println "Java version $project.minimumJavaVersion or later was found."
 }
-
-//this script does nothing; the only function of this build are the tests executed by :buildSrc:test
 
 repositories {
     mavenCentral()
@@ -33,11 +27,6 @@ dependencies {
 }
 
 task extractGosu(type: Sync) {
-//    doFirst() {
-//        String gosuFullDistroNotation = "org.gosu-lang.gosu:gosu:$project.gosuVersion:full@"
-//        gosuFullDistroNotation += WINDOWS ? 'zip' : 'tar.gz'
-//        project.dependencies.add('gosu', gosuFullDistroNotation)
-//    }
     if(WINDOWS) {
         from project.zipTree(project.configurations.getByName('gosu').singleFile)
     } else {
@@ -101,30 +90,34 @@ task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
     }
 }
 
+task gosuProgramWithImports(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a Gosu Program which imports other classes'
 
-////dependencies {
-////    classpath 'org.gosu-lang.gosu:gosu:1.8.1'
-////}
-//
-//task inlineScript(type: Exec) {//(dependsOn: init) {
-//
-//    def theCommand
-//    def args = ['-e', '\'print(\\"Hello world!\\")\'']
-//
-//    if(WINDOWS) {
-//        theCommand = ['cmd', '/c', 'gosu.bat']
-//        theCommand.addAll(args)
-//    } else {
-//        theCommand = ['./gosu']
-//        theCommand.addAll(args)
-//    }
-//
-//    commandLine = theCommand
-//
-//    //store the output instead of printing to the console:
-//    standardOutput = new ByteArrayOutputStream()
-//
-//    ext.output = {
-//        return standardOutput.toString()
-//    }
-//}
+    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    commandLine = ['imports/RunFoo.gsp']
+
+    //store the output instead of printing to the console:
+    standardOutput = new ByteArrayOutputStream()
+
+    String expectedOutput = "baz" + LF
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
+
+task gosuProgramWithClasspath(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a simple Gosu Program with a classpath argument'
+
+    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    commandLine = ['-classpath', '\"lib/commons-math-2.2.jar\"', 'externalDeps/Exponents.gsp']
+
+    //store the output instead of printing to the console:
+    standardOutput = new ByteArrayOutputStream()
+
+    String expectedOutput = "9 to the power of 3 is: 729" + LF
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
