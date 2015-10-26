@@ -71,14 +71,13 @@ task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
     gosuHome = GOSU_HOME
     commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable']
 
-    String expectedOutput = 
-"""hello, I found these arguments:
-\tfoo
-\tbar
-\tbaz
-\t42
-\tAcceptable
-"""
+    // Groovy's """ operator appends LF-only, not CRLF
+    String expectedOutput = 'hello, I found these arguments:' + LF + 
+            '\tfoo' + LF +
+            '\tbar' + LF +
+            '\tbaz' + LF +
+            '\t42' + LF +
+            '\tAcceptable' + LF
 
     doLast {
         project.logger.quiet('expected bytearray:\t' + expectedOutput.bytes)
