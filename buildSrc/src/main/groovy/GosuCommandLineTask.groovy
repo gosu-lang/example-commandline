@@ -19,7 +19,7 @@ class GosuCommandLineTask extends Exec {
         def theCommand
 
         if(WINDOWS) {
-            theCommand = ['cmd', '/c', "$gosuHome\\bin\\gosu.cmd"]
+            theCommand = ['cmd', '/u', '/c', "$gosuHome\\bin\\gosu.cmd"]
             theCommand.addAll(args)
         } else {
             theCommand = ["$gosuHome/bin/gosu"]

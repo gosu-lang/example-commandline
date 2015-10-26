@@ -43,9 +43,9 @@ task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run an inline script from the commandline'
     
     gosuHome = GOSU_HOME
-    commandLine = ['-e', """print('Hello world!')"""]
+    commandLine = ['-e', """print('Hello world')"""]
 
-    String expectedOutput = 'Hello world!' + LF
+    String expectedOutput = 'Hello world' + LF
     
     doLast {
         project.logger.quiet('expected bytearray:\t' + expectedOutput.bytes)
@@ -60,7 +60,7 @@ task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
     gosuHome = GOSU_HOME
     commandLine = ['simple/HelloWorld.gsp']
 
-    String expectedOutput = 'hello!' + LF
+    String expectedOutput = 'hello' + LF
 
     doLast {
         assert expectedOutput.equals(standardOutput.toString())
@@ -71,7 +71,7 @@ task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run a simple Gosu Program with arguments'
     
     gosuHome = GOSU_HOME
-    commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable!']
+    commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable']
 
     String expectedOutput = 
 """hello, I found these arguments:
@@ -79,7 +79,7 @@ task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
 \tbar
 \tbaz
 \t42
-\tAcceptable!
+\tAcceptable
 """
 
     doLast {
