@@ -1,6 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
+import java.nio.file.Paths
+
 final boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
+final String GOSU_HOME = Paths.get(project.buildDir.absolutePath, 'gosu', 'gosu-' + project.gosuVersion)
 final String LF = System.getProperty("line.separator")
 
 //check java version at initialization time
@@ -35,10 +38,11 @@ task extractGosu(type: Sync) {
     into "$project.buildDir/gosu"
 }
 
+
 task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run an inline script from the commandline'
     
-    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    gosuHome = GOSU_HOME
     commandLine = ['-e', """print('Hello world!')"""]
 
     String expectedOutput = 'Hello world!' + LF
@@ -51,7 +55,7 @@ task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
 task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run a simple Gosu Program with no dependencies or arguments'
     
-    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    gosuHome = GOSU_HOME
     commandLine = ['simple/HelloWorld.gsp']
 
     String expectedOutput = 'hello!' + LF
@@ -64,7 +68,7 @@ task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
 task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run a simple Gosu Program with arguments'
     
-    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    gosuHome = GOSU_HOME
     commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable!']
 
     String expectedOutput = 
@@ -84,7 +88,7 @@ task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
 task gosuProgramWithImports(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run a Gosu Program which imports other classes'
 
-    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    gosuHome = GOSU_HOME
     commandLine = ['imports/RunFoo.gsp']
 
     String expectedOutput = "baz" + LF
@@ -97,7 +101,7 @@ task gosuProgramWithImports(type: GosuCommandLineTask, dependsOn: extractGosu) {
 task gosuProgramWithClasspath(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run a simple Gosu Program with a classpath argument'
 
-    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    gosuHome = GOSU_HOME
     commandLine = ['-classpath', '\"lib/commons-math-2.2.jar\"', 'externalDeps/Exponents.gsp']
 
     String expectedOutput = "9 to the power of 3 is: 729" + LF
