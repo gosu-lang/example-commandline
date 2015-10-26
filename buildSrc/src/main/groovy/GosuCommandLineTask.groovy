@@ -21,11 +21,12 @@ class GosuCommandLineTask extends Exec {
             theCommand = ['cmd', '/c', 'gosu.bat']
             theCommand.addAll(args)
         } else {
-            theCommand = ['./gosu.sh']
+            theCommand = ['./gosu']
             theCommand.addAll(args)
         }
 
-        super.setCommandLine(args)
+        super.setCommandLine(args) //TODO actually use 'theCommand'
+        this.project.getLogger().quiet('The command will be: ' + getCommandLine())
     }
 
     @TaskAction
