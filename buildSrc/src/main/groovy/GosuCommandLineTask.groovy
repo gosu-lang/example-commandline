@@ -1,9 +1,8 @@
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.api.Action
+import org.gradle.api.Task
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.TaskAction
-
-import java.nio.file.Path
 
 class GosuCommandLineTask extends Exec {
 
@@ -26,7 +25,7 @@ class GosuCommandLineTask extends Exec {
             theCommand.addAll(args)
         }
 
-        super.setCommandLine(theCommand) //TODO actually use 'theCommand'
+        super.setCommandLine(theCommand)
         this.project.getLogger().quiet('The command will be: ' + getCommandLine())
     }
 

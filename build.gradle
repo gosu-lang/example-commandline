@@ -1,6 +1,11 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-def WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
+plugins {
+    id 'groovy'
+}
+
+final boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
+final String LF = System.getProperty("line.separator")
 
 //check java version at initialization time
 def javaVersion = Double.valueOf(System.getProperty('java.specification.version'))
@@ -10,29 +15,116 @@ if(javaVersion < Double.valueOf((String) project.minimumJavaVersion)) {
     println "Java version $project.minimumJavaVersion or later was found."
 }
 
-//dependencies {
-//    classpath 'org.gosu-lang.gosu:gosu:1.8.1'
-//}
+//this script does nothing; the only function of this build are the tests executed by :buildSrc:test
 
-task inlineScript(type: Exec) {//(dependsOn: init) {
+repositories {
+    mavenCentral()
+}
 
-    def theCommand
-    def args = ['-e', '\'print(\\"Hello world!\\")\'']
+configurations {
+    gosu
+}
 
+String gosuFullDistroNotation = "org.gosu-lang.gosu:gosu:$project.gosuVersion:full@"
+gosuFullDistroNotation += WINDOWS ? 'zip' : 'tar.gz'
+
+dependencies {
+    gosu    gosuFullDistroNotation
+}
+
+task extractGosu(type: Sync) {
+//    doFirst() {
+//        String gosuFullDistroNotation = "org.gosu-lang.gosu:gosu:$project.gosuVersion:full@"
+//        gosuFullDistroNotation += WINDOWS ? 'zip' : 'tar.gz'
+//        project.dependencies.add('gosu', gosuFullDistroNotation)
+//    }
     if(WINDOWS) {
-        theCommand = ['cmd', '/c', 'gosu.bat']
-        theCommand.addAll(args)
+        from project.zipTree(project.configurations.getByName('gosu').singleFile)
     } else {
-        theCommand = ['./gosu']
-        theCommand.addAll(args)
+        from project.tarTree(project.resources.gzip(project.configurations.getByName('gosu').singleFile))
     }
+    into "$project.buildDir/gosu"
+}
 
-    commandLine = theCommand
+task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run an inline script from the commandline'
+    
+    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    commandLine = ['-e', """print('Hello world!')"""]
+
+    //store the output instead of printing to the console:
+    standardOutput = new ByteArrayOutputStream()
+    
+    String expectedOutput = 'Hello world!' + LF
+    
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
+
+task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a simple Gosu Program with no dependencies or arguments'
+    
+    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    commandLine = ['simple/HelloWorld.gsp']
 
     //store the output instead of printing to the console:
     standardOutput = new ByteArrayOutputStream()
 
-    ext.output = {
-        return standardOutput.toString()
+    String expectedOutput = 'hello!' + LF
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
     }
 }
+
+task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a simple Gosu Program with arguments'
+    
+    gosuHome =  "$project.buildDir/gosu/gosu-$project.gosuVersion"
+    commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable!']
+
+    //store the output instead of printing to the console:
+    standardOutput = new ByteArrayOutputStream()
+
+    String expectedOutput = 
+"""hello, I found these arguments:
+foo
+bar
+baz
+42
+Acceptable!
+"""
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
+
+
+////dependencies {
+////    classpath 'org.gosu-lang.gosu:gosu:1.8.1'
+////}
+//
+//task inlineScript(type: Exec) {//(dependsOn: init) {
+//
+//    def theCommand
+//    def args = ['-e', '\'print(\\"Hello world!\\")\'']
+//
+//    if(WINDOWS) {
+//        theCommand = ['cmd', '/c', 'gosu.bat']
+//        theCommand.addAll(args)
+//    } else {
+//        theCommand = ['./gosu']
+//        theCommand.addAll(args)
+//    }
+//
+//    commandLine = theCommand
+//
+//    //store the output instead of printing to the console:
+//    standardOutput = new ByteArrayOutputStream()
+//
+//    ext.output = {
+//        return standardOutput.toString()
+//    }
+//}

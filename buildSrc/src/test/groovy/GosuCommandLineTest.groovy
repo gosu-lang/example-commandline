@@ -3,13 +3,15 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Sync
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Ignore
 import org.junit.Rule
 import org.springframework.boot.test.OutputCapture
 import spock.lang.Specification
 
-class InlineScriptTest extends Specification {
+class GosuCommandLineTest extends Specification {
 
     private Project project
+    private final String gosuVersion = '1.8.1'
     private final String gosuConfigurationName = 'gosu'
     private Task extractGosu
     private boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
@@ -20,14 +22,14 @@ class InlineScriptTest extends Specification {
     
     def setup() {
         project = ProjectBuilder.builder().build()
-        
+
         project.repositories {
             mavenCentral()
         }
         
         project.configurations.create(gosuConfigurationName)
         
-        String gosuFullDistroNotation = 'org.gosu-lang.gosu:gosu:1.8.1:full@'
+        String gosuFullDistroNotation = "org.gosu-lang.gosu:gosu:$gosuVersion:full@"
         gosuFullDistroNotation += WINDOWS ? 'zip' : 'tar.gz'
         
         project.dependencies.add(gosuConfigurationName, gosuFullDistroNotation)
@@ -42,13 +44,13 @@ class InlineScriptTest extends Specification {
         extractGosu.execute()
     }
     
-    def "test sumpin'"() {
+    def "Run an inline script from the commandline"() {
         given:
-        def expectedOutput = 'hello' + LF
+        def expectedOutput = 'Hello world!' + LF
 
         GosuCommandLineTask task = project.task('testTask', type: GosuCommandLineTask, dependsOn: extractGosu) {
-            gosuHome =  "$project.buildDir/gosu/gosu-1.8.1"
-            commandLine = ['-e', """print('hello')"""]
+            gosuHome =  "$project.buildDir/gosu/gosu-$gosuVersion"
+            commandLine = ['-e', """print('Hello world!')"""]
         }
 
         when:
@@ -59,4 +61,30 @@ class InlineScriptTest extends Specification {
         capture.toString().endsWith(expectedOutput)
     }
 
+//    @Ignore
+//    def "Run a simple Gosu Program with no dependencies or arguments"() {
+//        given:
+//        def expectedOutput = 'hello!' + LF
+//
+//        File simpleGosuProgram = project.file('simple/HelloWorld.gsp')// new File("$project.rootDir/simple/HelloWorld.gsp")
+//        project.getLogger().quiet('simple/HelloWorld.gsp should be: ' + simpleGosuProgram.getAbsolutePath())
+//        simpleGosuProgram.createNewFile()
+//        
+//        simpleGosuProgram << """
+//        print("hello!")
+//        """
+//
+//        GosuCommandLineTask task = project.task('testTask', type: GosuCommandLineTask, dependsOn: extractGosu) {
+//            gosuHome =  "$project.buildDir/gosu/gosu-$gosuVersion"
+//            commandLine = [simpleGosuProgram.absolutePath]
+//        }
+//
+//        when:
+//        capture.flush()
+//        task.execute()
+//
+//        then:
+//        capture.toString().endsWith(expectedOutput)
+//    }
+    
 }
