@@ -27,28 +27,4 @@ class GosuCommandLineTask extends Exec {
 //        this.project.getLogger().quiet('The command will be: ' + getCommandLine())
     }
 
-    @TaskAction
-    void start() {}
-
-//        def theCommand
-//
-//        if(WINDOWS) {
-//            theCommand = ['cmd', '/c', 'gosu.bat']
-//            theCommand.addAll(gosuArgs)
-//        } else {
-//            theCommand = ['./gosu.sh']
-//            theCommand.addAll(gosuArgs)
-//        }
-//
-//        commandLine = theCommand
-
-//        //store the output instead of printing to the console:
-//        standardOutput = new ByteArrayOutputStream()
-//
-//        ext.output = {
-//            return standardOutput.toString()
-//        }
-
-//    }
-
 }
