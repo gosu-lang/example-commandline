@@ -1,0 +1,111 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+import java.nio.file.Paths
+
+final boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
+final String GOSU_HOME = Paths.get(project.buildDir.absolutePath, 'gosu', 'gosu-' + project.gosuVersion)
+final String LF = System.getProperty("line.separator")
+
+//check java version at initialization time
+def javaVersion = Double.valueOf(System.getProperty('java.specification.version'))
+if(javaVersion < Double.valueOf((String) project.minimumJavaVersion)) {
+    throw new InvalidUserDataException("Java version $project.minimumJavaVersion or higher is required, exiting") //effectively exits the script
+} else {
+    println "Java version $project.minimumJavaVersion or later was found."
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    gosu
+}
+
+String gosuFullDistroNotation = "org.gosu-lang.gosu:gosu:$project.gosuVersion:full@"
+gosuFullDistroNotation += WINDOWS ? 'zip' : 'tar.gz'
+
+dependencies {
+    gosu    gosuFullDistroNotation
+}
+
+task extractGosu(type: Sync) {
+    if(WINDOWS) {
+        from project.zipTree(project.configurations.getByName('gosu').singleFile)
+    } else {
+        from project.tarTree(project.resources.gzip(project.configurations.getByName('gosu').singleFile))
+    }
+    into "$project.buildDir/gosu"
+}
+
+
+task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run an inline script from the commandline'
+    
+    gosuHome = GOSU_HOME
+    commandLine = ['-e', """print('Hello world')"""]
+
+    String expectedOutput = 'Hello world' + LF
+    
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
+
+task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a simple Gosu Program with no dependencies or arguments'
+    
+    gosuHome = GOSU_HOME
+    commandLine = ['simple/HelloWorld.gsp']
+
+    String expectedOutput = 'hello' + LF
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
+
+task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a simple Gosu Program with arguments'
+    
+    gosuHome = GOSU_HOME
+    commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable']
+
+    // Groovy's """ operator appends LF-only, not CRLF
+    String expectedOutput = 'hello, I found these arguments:' + LF + 
+            '\tfoo' + LF +
+            '\tbar' + LF +
+            '\tbaz' + LF +
+            '\t42' + LF +
+            '\tAcceptable' + LF
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
+
+task gosuProgramWithImports(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a Gosu Program which imports other classes'
+
+    gosuHome = GOSU_HOME
+    commandLine = ['imports/RunFoo.gsp']
+
+    String expectedOutput = "baz" + LF
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
+
+task gosuProgramWithClasspath(type: GosuCommandLineTask, dependsOn: extractGosu) {
+    description = 'Run a simple Gosu Program with a classpath argument'
+
+    gosuHome = GOSU_HOME
+    commandLine = ['-classpath', '\"lib/commons-math-2.2.jar\"', 'externalDeps/Exponents.gsp']
+
+    String expectedOutput = "9 to the power of 3 is: 729" + LF
+
+    doLast {
+        assert expectedOutput.equals(standardOutput.toString())
+    }
+}
