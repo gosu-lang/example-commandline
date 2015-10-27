@@ -13,6 +13,5 @@ general:
       - master # only build/deploy from master
 
 test:
-  # Call './gradlew build uploadArchives' instead of the default 'mvn integration-test'
   override:
     - ./gradlew inlineScript simpleGosuProgram gosuProgramWithArgs gosuProgramWithImports gosuProgramWithClasspath
