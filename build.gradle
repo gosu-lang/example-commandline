@@ -2,7 +2,6 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 import java.nio.file.Paths
 
-final boolean WINDOWS = Os.isFamily(Os.FAMILY_WINDOWS)
 final String GOSU_HOME = Paths.get(project.buildDir.absolutePath, 'gosu', 'gosu-' + project.gosuVersion)
 final String LF = System.getProperty("line.separator")
 
@@ -16,37 +15,33 @@ if(javaVersion < Double.valueOf((String) project.minimumJavaVersion)) {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 configurations {
     gosu
 }
 
-String gosuFullDistroNotation = "org.gosu-lang.gosu:gosu:$project.gosuVersion:full@"
-gosuFullDistroNotation += WINDOWS ? 'zip' : 'tar.gz'
+String gosuFullDistroNotation = "org.gosu-lang.gosu:gosu:$project.gosuVersion:full@zip"
 
 dependencies {
     gosu    gosuFullDistroNotation
 }
 
 task extractGosu(type: Sync) {
-    if(WINDOWS) {
-        from project.zipTree(project.configurations.getByName('gosu').singleFile)
-    } else {
-        from project.tarTree(project.resources.gzip(project.configurations.getByName('gosu').singleFile))
-    }
+    from project.zipTree(project.configurations.getByName('gosu').singleFile)
     into "$project.buildDir/gosu"
 }
 
 
 task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run an inline script from the commandline'
-    
+
     gosuHome = GOSU_HOME
     commandLine = ['-e', """print('Hello world')"""]
 
     String expectedOutput = 'Hello world' + LF
-    
+
     doLast {
         assert expectedOutput.equals(standardOutput.toString())
     }
@@ -54,7 +49,7 @@ task inlineScript(type: GosuCommandLineTask, dependsOn: extractGosu) {
 
 task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run a simple Gosu Program with no dependencies or arguments'
-    
+
     gosuHome = GOSU_HOME
     commandLine = ['simple/HelloWorld.gsp']
 
@@ -67,12 +62,12 @@ task simpleGosuProgram(type: GosuCommandLineTask, dependsOn: extractGosu) {
 
 task gosuProgramWithArgs(type: GosuCommandLineTask, dependsOn: extractGosu) {
     description = 'Run a simple Gosu Program with arguments'
-    
+
     gosuHome = GOSU_HOME
     commandLine = ['simple/HelloWorldWithArgs.gsp', 'foo', 'bar', '\"baz\"', '42', 'Acceptable']
 
     // Groovy's """ operator appends LF-only, not CRLF
-    String expectedOutput = 'hello, I found these arguments:' + LF + 
+    String expectedOutput = 'hello, I found these arguments:' + LF +
             '\tfoo' + LF +
             '\tbar' + LF +
             '\tbaz' + LF +
