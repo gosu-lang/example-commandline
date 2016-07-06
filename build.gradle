@@ -14,8 +14,8 @@ if(javaVersion < Double.valueOf((String) project.minimumJavaVersion)) {
 }
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
 }
 
 configurations {
